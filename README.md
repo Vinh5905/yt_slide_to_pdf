@@ -181,12 +181,40 @@ Good starting value: `1.0`.
 
 ### Consecutive duplicate merge strength
 
-This controls how aggressively the app merges consecutive frames that look like the same slide.
+This controls when two sampled frames are treated as the same consecutive slide.
 
-- Lower value: keeps more pages.
-- Higher value: merges more repeated pages.
+It is not the number of future images to check. A value of `5` does not mean "look at the next 5 images."
+
+The app processes frames in video order:
+
+1. It samples one frame every **Capture interval in seconds**.
+2. It keeps a current slide candidate.
+3. For each new sampled frame, it compares that frame only with the current slide candidate.
+4. If they look similar enough, the app treats them as the same slide and merges them.
+5. If they look different, the app saves the current slide as one PDF page and starts a new slide candidate.
+
+The merge check uses two signals:
+
+- **Perceptual hash distance**: a compact visual fingerprint of the frame. The slider value is the maximum hash distance allowed before two frames are considered too different.
+- **Small pixel comparison**: a resized preview comparison that prevents obviously different frames from being merged just because their layout is similar.
+
+In practice:
+
+- Lower value: stricter matching, fewer frames are merged, more PDF pages.
+- Higher value: looser matching, more consecutive frames can be merged, fewer PDF pages.
 
 Good starting value: `5`.
+
+Example:
+
+```text
+Sampled frames: A A A B B C C
+Output pages:   A B C
+```
+
+If the app creates repeated pages for the same slide, increase this value.
+
+If the app merges two different slides into one page, decrease this value.
 
 ## Output Files
 

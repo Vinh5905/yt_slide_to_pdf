@@ -308,7 +308,11 @@ def main():
         min_value=0,
         max_value=20,
         value=5,
-        help="Increase this if the same slide is split into too many consecutive pages.",
+        help=(
+            "This is a similarity threshold, not a count of frames. The app compares "
+            "each sampled frame with the current slide candidate. Higher values merge "
+            "more similar consecutive frames; lower values keep more pages."
+        ),
     )
 
     if st.button("Create PDFs for all videos"):
