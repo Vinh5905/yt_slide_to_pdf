@@ -18,6 +18,220 @@ RESAMPLING_FILTER = getattr(Image, "Resampling", Image).LANCZOS
 SIGNATURE_SIZE = (160, 90)
 PIXEL_DIFFERENCE_THRESHOLD = 3.0
 CHANGED_AREA_THRESHOLD = 0.01
+DEFAULT_CAPTURE_INTERVAL_SECONDS = 0.5
+DEFAULT_DUPLICATE_MERGE_STRENGTH = 3
+
+
+def apply_page_style():
+    st.markdown(
+        """
+        <style>
+        :root {
+            --surface: rgba(255, 255, 255, 0.88);
+            --surface-strong: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --blue: #2563eb;
+            --cyan: #0891b2;
+            --amber: #f59e0b;
+            --green: #0f766e;
+            --border: rgba(15, 23, 42, 0.10);
+        }
+
+        .stApp {
+            background: linear-gradient(135deg, #f8fbff 0%, #ffffff 48%, #fff7ed 100%);
+            color: var(--text);
+        }
+
+        [data-testid="stHeader"] {
+            background: rgba(248, 250, 252, 0.76);
+            backdrop-filter: blur(10px);
+        }
+
+        .block-container {
+            max-width: 1180px;
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+        }
+
+        .app-hero {
+            color: white;
+            border-radius: 8px;
+            padding: 28px 30px;
+            margin-bottom: 20px;
+            background:
+                linear-gradient(120deg, rgba(37, 99, 235, 0.97), rgba(8, 145, 178, 0.91) 56%, rgba(245, 158, 11, 0.86));
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+        }
+
+        .hero-eyebrow {
+            margin: 0 0 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            opacity: 0.86;
+        }
+
+        .app-hero h1 {
+            margin: 0;
+            max-width: 760px;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            line-height: 1.04;
+            letter-spacing: 0;
+        }
+
+        .app-hero p {
+            margin: 14px 0 0;
+            max-width: 720px;
+            font-size: 1.03rem;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.91);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .hero-stat {
+            border-radius: 8px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .hero-stat strong {
+            display: block;
+            font-size: 1.04rem;
+            line-height: 1.25;
+        }
+
+        .hero-stat span {
+            display: block;
+            margin-top: 2px;
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .section-kicker {
+            margin: 0 0 0.5rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0f172a;
+            background: #e0f2fe;
+            border: 1px solid rgba(8, 145, 178, 0.20);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background: var(--surface);
+            border-color: var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+        }
+
+        div[data-testid="stTextArea"] textarea,
+        div[data-testid="stNumberInput"] input,
+        div[data-baseweb="slider"] {
+            border-radius: 8px;
+        }
+
+        .stButton > button,
+        .stDownloadButton > button {
+            border-radius: 8px;
+            border: 0;
+            font-weight: 700;
+            min-height: 2.8rem;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.20);
+        }
+
+        .stButton > button {
+            color: white;
+            background: linear-gradient(90deg, var(--blue), var(--cyan));
+        }
+
+        .stDownloadButton > button {
+            color: white;
+            background: linear-gradient(90deg, var(--green), var(--cyan));
+        }
+
+        .stButton > button:hover,
+        .stDownloadButton > button:hover {
+            color: white;
+            border: 0;
+            filter: brightness(0.98);
+        }
+
+        [data-testid="stProgress"] > div > div > div > div {
+            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--amber));
+        }
+
+        [data-testid="stMetric"] {
+            background: rgba(37, 99, 235, 0.06);
+            border: 1px solid rgba(37, 99, 235, 0.10);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+
+        @media (max-width: 760px) {
+            .block-container {
+                padding-top: 1rem;
+            }
+
+            .app-hero {
+                padding: 22px 18px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero():
+    st.markdown(
+        """
+        <div class="app-hero">
+            <p class="hero-eyebrow">Batch PDF builder</p>
+            <h1>YouTube Slides to PDF</h1>
+            <p>Capture sharp video frames in order and export one clean landscape PDF per video.</p>
+            <div class="hero-grid">
+                <div class="hero-stat"><strong>0.5s default</strong><span>More chances to catch fast slide changes</span></div>
+                <div class="hero-stat"><strong>Merge strength 3</strong><span>Stricter duplicate detection by default</span></div>
+                <div class="hero-stat"><strong>Per-video results</strong><span>Preview and download as each video finishes</span></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def slugify_filename(value, fallback="youtube-video"):
@@ -123,18 +337,25 @@ def render_video_result(result):
         st.error(result["error"])
         return
 
-    st.subheader(f"{result['index']}. {result['title']}")
-    st.caption(result["url"])
-    st.success(f"Ready: {result['page_count']} pages")
-    st.download_button(
-        "Download PDF",
-        data=result["pdf_bytes"],
-        file_name=f"{result['file_slug']}.pdf",
-        mime="application/pdf",
-        key=f"download-{result['file_slug']}",
-        on_click="ignore",
-    )
-    st.caption(f"File name: {result['file_slug']}.pdf")
+    title_column, action_column = st.columns([3, 1], gap="large")
+
+    with title_column:
+        st.subheader(f"{result['index']}. {result['title']}")
+        st.caption(result["url"])
+        st.success("Ready")
+        st.caption(f"File name: {result['file_slug']}.pdf")
+
+    with action_column:
+        st.metric("Pages", result["page_count"])
+        st.download_button(
+            "Download PDF",
+            data=result["pdf_bytes"],
+            file_name=f"{result['file_slug']}.pdf",
+            mime="application/pdf",
+            key=f"download-{result['file_slug']}",
+            on_click="ignore",
+            use_container_width=True,
+        )
 
     with st.expander("Preview all slides", expanded=False):
         for index, screenshot in enumerate(result["screenshots"], start=1):
@@ -150,7 +371,10 @@ def render_video_status(slot, index, total, url, stage, detail=None):
     with slot.container(border=True):
         st.subheader(f"Video {index}/{total}")
         st.caption(url)
-        st.info(stage)
+        st.markdown(
+            f'<div class="status-pill"><span class="status-dot"></span>{stage}</div>',
+            unsafe_allow_html=True,
+        )
         if detail:
             st.caption(detail)
 
@@ -194,7 +418,11 @@ def make_slide_entry(hash_value, image, sharpness, signature):
     }
 
 
-def extract_unique_screenshots(video_path, capture_interval_seconds=1.0, hash_threshold=5):
+def extract_unique_screenshots(
+    video_path,
+    capture_interval_seconds=DEFAULT_CAPTURE_INTERVAL_SECONDS,
+    hash_threshold=DEFAULT_DUPLICATE_MERGE_STRENGTH,
+):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise RuntimeError("Could not open the downloaded video file.")
@@ -278,44 +506,53 @@ def create_pdf_bytes(screenshots):
 
 
 def main():
-    st.title("YouTube Video Screenshot to PDF")
-    st.write(
-        "Paste one or more YouTube links. The app processes videos one by one, "
-        "captures distinct screenshots, and exports one landscape PDF per video. "
-        "No OCR and no PowerPoint export."
+    st.set_page_config(
+        page_title="YouTube Slides to PDF",
+        layout="wide",
     )
+    apply_page_style()
+    render_hero()
 
     if "video_results" not in st.session_state:
         st.session_state["video_results"] = []
 
-    youtube_urls = st.text_area(
-        "YouTube Video URLs:",
-        "",
-        height=160,
-        placeholder="One YouTube URL per line",
-    )
+    input_column, settings_column = st.columns([2.15, 1], gap="large")
 
-    capture_interval_seconds = st.number_input(
-        "Capture interval in seconds",
-        min_value=0.25,
-        max_value=30.0,
-        value=1.0,
-        step=0.25,
-        help="Lower values capture more frames and may catch quick slide changes, but processing takes longer.",
-    )
-    hash_threshold = st.slider(
-        "Consecutive duplicate merge strength",
-        min_value=0,
-        max_value=20,
-        value=5,
-        help=(
-            "This is a similarity threshold, not a count of frames. The app compares "
-            "each sampled frame with the current slide candidate. Higher values merge "
-            "more similar consecutive frames; lower values keep more pages."
-        ),
-    )
+    with input_column:
+        with st.container(border=True):
+            st.markdown('<p class="section-kicker">Video queue</p>', unsafe_allow_html=True)
+            youtube_urls = st.text_area(
+                "YouTube URLs",
+                "",
+                height=190,
+                placeholder="One YouTube URL per line",
+                label_visibility="visible",
+            )
 
-    if st.button("Create PDFs for all videos"):
+    with settings_column:
+        with st.container(border=True):
+            st.markdown('<p class="section-kicker">Extraction settings</p>', unsafe_allow_html=True)
+            capture_interval_seconds = st.number_input(
+                "Capture interval in seconds",
+                min_value=0.25,
+                max_value=30.0,
+                value=DEFAULT_CAPTURE_INTERVAL_SECONDS,
+                step=0.25,
+                help="Lower values capture more frames and may catch quick slide changes, but processing takes longer.",
+            )
+            hash_threshold = st.slider(
+                "Consecutive duplicate merge strength",
+                min_value=0,
+                max_value=20,
+                value=DEFAULT_DUPLICATE_MERGE_STRENGTH,
+                help=(
+                    "This is a similarity threshold, not a count of frames. The app compares "
+                    "each sampled frame with the current slide candidate. Higher values merge "
+                    "more similar consecutive frames; lower values keep more pages."
+                ),
+            )
+
+    if st.button("Create PDFs for all videos", use_container_width=True):
         urls = parse_youtube_urls(youtube_urls)
         if not urls:
             st.warning("Enter at least one YouTube URL.")

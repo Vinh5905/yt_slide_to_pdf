@@ -177,13 +177,15 @@ This controls how often the app samples frames from the video.
 - Lower value: captures more frames, catches quick slide changes, takes longer.
 - Higher value: faster, smaller output, may miss very quick slide changes.
 
-Good starting value: `1.0`.
+Default value: `0.5`.
+
+Use a higher value such as `1.0` or `2.0` if the video changes slides slowly and you want faster processing.
 
 ### Consecutive duplicate merge strength
 
 This controls when two sampled frames are treated as the same consecutive slide.
 
-It is not the number of future images to check. A value of `5` does not mean "look at the next 5 images."
+It is not the number of future images to check. A value of `3` does not mean "look at the next 3 images."
 
 The app processes frames in video order:
 
@@ -203,7 +205,7 @@ In practice:
 - Lower value: stricter matching, fewer frames are merged, more PDF pages.
 - Higher value: looser matching, more consecutive frames can be merged, fewer PDF pages.
 
-Good starting value: `5`.
+Default value: `3`.
 
 Example:
 
